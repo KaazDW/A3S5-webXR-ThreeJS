@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Outfit:wght@100..900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+			:root{
+				--height: 10px;
+			}
+			body {
+				margin: 0;
+				background-color: blue;
+				font-family: "Poppins", sans-serif;
+			}
+			canvas{
+				height: 100%;
+				width: 100%;
+			}
+			.element{
+				background-color: #222;
+				border-radius: 5px;
+				padding: 5px 8px;
+				font-size: 15px;
+				right: 10px;
+				color: white;
+				position: absolute;
+			}
+			#player-position {
+				top: var(--height);
+			}
+			#view-position {
+				top: calc(var(--height) + 40px);
+			}
+
+		</style>
+	</head>
+	<body>
+		<div id="player-position" class="element"></div>
+		<div id="view-position" class="element"></div>
+<!--		<script type="module" src="Q3_template.js"></script>-->
+		<script type="module" src="test.js"></script>
+	</body>
+</html>
