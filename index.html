@@ -10,7 +10,6 @@
 			}
 			body {
 				margin: 0;
-				background-color: blue;
 				font-family: "Poppins", sans-serif;
 			}
 			canvas{
@@ -18,13 +17,14 @@
 				width: 100%;
 			}
 			.element{
-				background-color: #222;
+				background-color: rgba(34, 34, 34, 0.61);
 				border-radius: 5px;
 				padding: 5px 8px;
 				font-size: 15px;
 				right: 10px;
 				color: white;
 				position: absolute;
+				backdrop-filter: blur(10px);
 			}
 			#player-position {
 				top: var(--height);
@@ -32,13 +32,57 @@
 			#view-position {
 				top: calc(var(--height) + 40px);
 			}
-
+			#bulb-status {
+				top: calc(var(--height) + 80px);
+			}
+			#object-rotation {
+				top: calc(var(--height) + 120px);
+			}
+			#object-distance {
+				top: calc(var(--height) + 160px);
+			}
+			.info{
+				bottom: 30px;
+				width: 500px;
+			}
+			#name{
+				background-color: rgba(34, 34, 34, 0.61);
+				border-radius: 5px;
+				padding: 5px 8px;
+				font-size: 15px;
+				left: 10px;
+				color: white;
+				position: absolute;
+				backdrop-filter: blur(10px);
+				top: 10px;
+			}
 		</style>
 	</head>
 	<body>
+		<div id="name">KaazDW</div>
 		<div id="player-position" class="element"></div>
 		<div id="view-position" class="element"></div>
-<!--		<script type="module" src="Q3_template.js"></script>-->
+		<div id="bulb-status" class="element"></div>
+		<div id="object-rotation" class="element"></div>
+		<div id="object-distance" class="element"></div>
+
+		<div class="element info">
+			<p>Liste des éléments présents :</p>
+			<ul>
+				<li>2 lumières exterieurs (lumiere du jour)</li>
+				<li>2 lumières interieurs (ampoules)</li>
+				<li>1 objet décor (grenier)</li>
+				<li>1 objet d'intéraction (cadre au dessus de la porte)</li>
+				<li>1 son lors de l'interaction avec la lumière intérieur</li>
+			</ul>
+			<p>Liste de fonctionnalités :</p>
+			<ul>
+				<li>Appuyez sur "C" pour allumer ou éteindre la lumière de la pièce (un son est joué).</li>
+				<li>Déplacez-vous dans la pièce avec les touches "Z", "Q", "S", et "D"</li>
+				<li>Il est possible de modifier votre hauteur dans la scène avec les touches "A" et "E"</li>
+				<li>Lorsque vous vous trouvez à moins de 3m du Cadre présent au dessus de la porte, vous pouvez par un click gauche en modifier l'orientation (ce qui en modifiera la valeur afficher dans la liste des statistiques en haut à droite de votre écran.</li>
+			</ul>
+		</div>
 		<script type="module" src="test.js"></script>
 	</body>
 </html>

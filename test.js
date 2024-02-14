@@ -25,7 +25,14 @@ let moveLeft = false;
 let moveRight = false;
 let moveUp = false;
 let moveDown = false;
+let originalRotation = null;
 
+// Sound
+const switchSoundFile = './models/son.mp3'; // Adjust the path to your audio file
+const switchSound = new Audio(switchSoundFile);
+
+// Define a variable to store the clicked object
+let clickedObject = null;
 function init() {
     clock = new THREE.Clock();
     scene = new THREE.Scene();
@@ -42,7 +49,7 @@ function init() {
     // ---------------- CAMERA ----------------
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.set(0, 1, 0);
+    camera.position.set(0, 1.5, 0);
     camera.lookAt(-5, 1, 0);
     scene.add(camera);
 
@@ -58,21 +65,21 @@ function init() {
 
     // Point light 2 (opposite direction)
     lumiereExterieur2 = new THREE.PointLight(color, intensity);
-    lumiereExterieur2.castShadow = true; // IMPORTANT FOR SHADOWS !!!
-    lumiereExterieur2.position.set(-14, 1.5, 0); // Opposite direction
+    lumiereExterieur2.castShadow = true;
+    lumiereExterieur2.position.set(-14, 1.5, 0);
     scene.add(lumiereExterieur2);
 
     const intensity2 = 10;
 
     // Bulb light 1
     ampoule1 = new THREE.PointLight(color, intensity2);
-    ampoule1.castShadow = true; // IMPORTANT FOR SHADOWS !!!
+    ampoule1.castShadow = true;
     ampoule1.position.set(-9.25, 2.25, 0);
     scene.add(ampoule1);
 
     // Bulb light 2
     ampoule2 = new THREE.PointLight(color, intensity2);
-    ampoule2.castShadow = true; // IMPORTANT FOR SHADOWS !!!
+    ampoule2.castShadow = true;
     ampoule2.position.set(1, 2.25, 0);
     scene.add(ampoule2);
 
@@ -92,7 +99,6 @@ function init() {
 
     // ---------------- SCENE 3D ELEMENTS ----------------
 
-    // Load GLTF model
     const loader = new GLTFLoader();
     loader.load(
         'models/the_attic_environment.glb',
@@ -104,6 +110,47 @@ function init() {
             console.error('Erreur lors du chargement du fichier glTF', error);
         }
     );
+
+
+
+// Mouse click event listener
+    document.addEventListener('click', function(event) {
+        if (event.button === 0 && clickedObject !== null) { // Left mouse button clicked
+            // Check proximity to the object
+            const playerPosition = controls.getObject().position;
+            const objectPosition = clickedObject.position;
+            const distance = playerPosition.distanceTo(objectPosition);
+
+            // Define a threshold distance for proximity
+            const proximityThreshold = 3;
+            if (distance <= proximityThreshold) {
+                // Rotate the object by 45 degrees around the X axis
+                clickedObject.rotation.x += Math.PI / 4;
+            }
+        }
+    });
+
+// Load another GLTF model
+    const loader2 = new GLTFLoader();
+    loader2.load(
+        'models/photo_of_drum_corps_framed.glb',
+        function (gltf) {
+            gltf.scene.position.set(-7.8, 2.8, 0);
+            gltf.scene.scale.set(0.0008, 0.0008, 0.0008);
+            gltf.scene.rotation.set(0, Math.PI / 2, 0);
+            scene.add(gltf.scene);
+
+            // Set the loaded object as the clicked object
+            clickedObject = gltf.scene;
+            originalRotation = clickedObject.rotation.clone();
+
+        },
+        undefined,
+        function (error) {
+            console.error('Erreur lors du chargement du nouveau modèle glTF', error);
+        }
+    );
+
 
     // ---------------- STARTING THE GAME MAIN LOOP ----------------
     render();
@@ -119,14 +166,18 @@ function render() {
     // Update player position and camera data
     updatePlayerPosition();
     updateCameraData();
+    updateObjectDistanceStatus();
+
+    updateBulbLightsStatus();
+    updateObjectRotationStatus();
 
     renderer.render(scene, camera); // We are rendering the 3D world
     requestAnimationFrame(render); // we are calling render() again,  to loop
 }
 
 function updateMovement() {
-    const moveSpeed = 0.2;
-    const verticalSpeed = 0.1;
+    const moveSpeed = 0.05;
+    const verticalSpeed = 0.03;
 
     const direction = new THREE.Vector3();
     camera.getWorldDirection(direction).multiplyScalar(moveSpeed);
@@ -216,6 +267,40 @@ function toggleBulbLights() {
     ampouleOn = !ampouleOn;
     ampoule1.visible = ampouleOn;
     ampoule2.visible = ampouleOn;
+
+    // Play switch sound
+    playSwitchSound();
 }
 
+function playSwitchSound() {
+    switchSound.currentTime = 0; // Reset the sound playback to the beginning
+    switchSound.play(); // Play the sound
+}
+
+function updateBulbLightsStatus() {
+    const bulbStatusElement = document.getElementById('bulb-status');
+    bulbStatusElement.innerText = `Ampoules allumées : ${ampouleOn ? 'Oui' : 'Non'}`;
+}
+function updateObjectRotationStatus() {
+    if (clickedObject !== null) {
+        const objectRotationElement = document.getElementById('object-rotation');
+        const objectRotation = clickedObject.rotation;
+        const remainder = objectRotation.x % (2 * Math.PI);
+        if (Math.abs(remainder) < 0.01) { // Adjust the threshold as needed
+            objectRotationElement.innerText = `Cadre droit ? : Oui`;
+            objectRotation.x = originalRotation.x;
+        } else {
+            objectRotationElement.innerText = `Cadre droit ? : Non`;
+        }
+    }
+}
+function updateObjectDistanceStatus() {
+    if (clickedObject !== null) {
+        const objectDistanceElement = document.getElementById('object-distance');
+        const playerPosition = controls.getObject().position;
+        const objectPosition = clickedObject.position;
+        const distance = playerPosition.distanceTo(objectPosition);
+        objectDistanceElement.innerText = `Distance de l'objet: ${distance.toFixed(2)}m`;
+    }
+}
 init();
